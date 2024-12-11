@@ -1,9 +1,11 @@
+// src/App.jsx
 import React, { useState } from 'react';
 import { Column } from './components/Column';
 import { Header } from './components/Header';
 import { ErrorMessage } from './components/ErrorMessage';
 import { CompanyPopup } from './components/CompanyPopup';
 import { LoadingState } from './components/LoadingState';
+import { PasswordModal } from './components/PasswordModal'; // Import the PasswordModal
 import { fetchPriorityData } from './services/api';
 
 function App() {
@@ -11,6 +13,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -24,6 +27,14 @@ function App() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleRefreshClick = () => {
+    setShowPasswordModal(true);
+  };
+
+  const handlePasswordSubmit = () => {
+    fetchData();
   };
 
   const handleCompanyClick = (company) => {
@@ -41,7 +52,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-7xl mx-auto">
-        <Header onRefresh={fetchData} isLoading={isLoading} />
+        <Header onRefresh={handleRefreshClick} isLoading={isLoading} />
         {error && <ErrorMessage message={error} />}
         {isLoading ? (
           <LoadingState />
@@ -61,6 +72,12 @@ function App() {
           <CompanyPopup 
             company={selectedCompany} 
             onClose={() => setSelectedCompany(null)} 
+          />
+        )}
+        {showPasswordModal && (
+          <PasswordModal 
+            onClose={() => setShowPasswordModal(false)} 
+            onSubmit={handlePasswordSubmit} 
           />
         )}
       </div>
